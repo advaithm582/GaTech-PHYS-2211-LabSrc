@@ -1,0 +1,88 @@
+% !TEX TS-program = xelatex+makeindex+bibtex+shellescape
+% !TEX encoding = UTF-8 Unicode
+
+% Copyright 2024 Advaith Menon/GaTech
+
+% Permission is hereby granted, free of charge, to any person obtaining
+% a copy of this software and associated documentation files (the 
+% "Software"), to deal in the Software without restriction, including
+% without limitation the rights to use, copy, modify, merge, publish,
+% distribute, sublicense, and/or sell copies of the Software, and to
+% permit persons to whom the Software is furnished to do so, subject
+% to the following conditions:
+
+% The above copyright notice and this permission notice shall be
+% included in all copies or substantial portions of the Software.
+
+% THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+% EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+% OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+% NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+% HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+% WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+% OTHER DEALINGS IN THE SOFTWARE.
+
+% Observations - Tracker
+\subsection{Model (with drag)}
+\begin{frame}{Model (with drag)}{Data needed for simulation}
+\begin{itemize}
+    \item Net acceleration on object, \texttt{a\_net} \( = -g\hat{j}\)
+     ms\textsuperscript{-2} \( = -9.8\hat{j}\) ms\textsuperscript{-2}
+    \item Vertical displacement, \texttt{delta\_h} \( = -1.17\hat{j}\) m
+    \item Initial position \( = 1.12\times 10^{-2} \hat{j} \) m
+    \item Mass of the ball, \(m_{ball} = 4.6\ \mathrm{g} = 4.6 \times 10^{-3}
+    \ \mathrm{kg}\)
+    \item \textbf{NOTE}: The data stays the same, the only thing to keep in 
+    mind is that we have to account for drag force too!
+    \item \texttt{drag\_force} = \(b|v|^2 \hat{j}\)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Model (with drag)}{Simulation code}
+\begin{multicols}{2}
+\begin{minted}[breaklines,fontsize=\tiny]{python}
+# CONSTANTS
+ACC_G = 9.8 # ms-2
+B = .001 # guessed by trial-and-error
+
+ball = sphere(color=color.blue, radius=0.22) # sphere ball = new sphere(color.BLUE, 0.22);
+trail = curve(color=color.green, radius=0.02)
+origin = sphere(pos=vector(0,0,0), color=color.yellow, radius=0.04)
+plot = graph(title="Position vs Time", xtitle="Time (s)", ytitle="Position (m)")
+poscurve = gcurve(color=color.green, width=4)
+plot = graph(title="Velocity vs Time", xtitle="Time (s)", ytitle="Velocity (m/s)")
+velcurve = gcurve(color=color.green, width=4)
+plot = graph(title="Acceleration vs Time", xtitle="Time (s)", ytitle="Velocity (m/s2)")
+acccurve = gcurve(color=color.green, width=4)
+
+# SYSTEM PROPERTIES & INITIAL CONDITIONS
+ball.m = 4.6e-3 #kg
+ball.pos = vector(0,1.12e-2,0) # m
+ball.vel = vector(0,0,0) # 
+ball.acc = vector(0, -ACC_G, 0) #ms-2
+
+# Time
+t = 0           # where the clock starts
+deltat = 0.001   # size of each timestep
+
+while ball.pos.y >= -1.157057:
+    rate(1000)
+
+    # Apply the Momentum Principle (Newton's 2nd Law)
+    acc = (ball.acc + (B*ball.vel.y**2/ball.m)*vector(0, 1, 0))
+    ball.vel = ball.vel + acc*deltat
+    ball.pos = ball.pos + ball.vel*deltat
+    
+    t = t + deltat
+    trail.append(pos=ball.pos)
+
+    poscurve.plot(t,ball.pos.y)
+    velcurve.plot(t,ball.vel.y)
+    acccurve.plot(t,acc.y);
+    print(t,ball.pos.x)
+
+print("All done!")
+\end{minted}
+\end{multicols}
+\end{frame}
