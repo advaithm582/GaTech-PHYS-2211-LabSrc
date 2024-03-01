@@ -1,0 +1,421 @@
+% !TEX TS-program = xelatex+makeindex+bibtex+shellescape
+% !TEX encoding = UTF-8 Unicode
+
+% Copyright 2024 Advaith Menon/GaTech
+
+% Permission is hereby granted, free of charge, to any person obtaining
+% a copy of this software and associated documentation files (the 
+% "Software"), to deal in the Software without restriction, including
+% without limitation the rights to use, copy, modify, merge, publish,
+% distribute, sublicense, and/or sell copies of the Software, and to
+% permit persons to whom the Software is furnished to do so, subject
+% to the following conditions:
+
+% The above copyright notice and this permission notice shall be
+% included in all copies or substantial portions of the Software.
+
+% THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+% EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+% OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+% NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+% HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+% WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+% OTHER DEALINGS IN THE SOFTWARE.
+
+% Observations - Tracker
+\subsection{Code}
+
+\begin{frame}[fragile]{Simulation code}{Finding mass of black hole}
+\begin{multicols}{2}
+\begin{minted}[breaklines,fontsize=\tiny]{python}
+seed="amenon301@gatech.edu"
+
+# ... kepler's formula
+
+scene.background = color.white
+
+star = sphere(color=color.yellow, radius=3e11)
+trail = curve(color=color.green)
+origin = sphere(pos=vector(0,0,0), color=color.black, radius=3e11)
+
+arrowFnet = arrow(pos=star.pos, axis=vector(0,0,0), color=color.orange)
+arrowFnet_par = arrow(pos=star.pos, axis=vector(0,0,0), color=color.magenta)
+arrowFnet_perp = arrow(pos=star.pos, axis=vector(0,0,0), color=color.cyan)
+
+G = 6.7e-11
+
+# Mass of the star -- EDIT THIS LINE
+star.m = 2e30
+
+# Time interval between imported data points -- EDIT THIS LINE
+deltat = 86400
+
+# Time for first observation data point (default t=0)
+t = 0
+
+# Calculate velocity from data
+Xvel = [0 for i in range(len(X)-1)]  
+Yvel = [0 for i in range(len(X)-1)]  
+
+idx = 0
+while idx < (len(X)-1):
+    # compute x component of velocity
+    deltaX = X[idx+1] - X[idx]
+    Xvel[idx] = deltaX/deltat
+    # compute y component of velocity 
+    deltaY = Y[idx+1] - Y[idx]
+    Yvel[idx] = deltaY/deltat
+    idx = idx + 1
+
+t = t + deltat 
+
+idx=1
+
+myballs = 0
+
+while idx <(len(X)-1):
+    rate(50) 
+
+    v_init = vector(Xvel[idx-1],Yvel[idx-1],0)
+    v_final = vector(Xvel[idx],Yvel[idx],0)
+
+    # EDIT THESE TWO LINES
+    p_init = star.m * v_init 
+    p_final = star.m * v_final # $\vec{p} = m\vec{v}$
+    
+    # EDIT THESE TWO LINES
+    deltav = v_final - v_init
+    deltap = p_final - p_init
+    
+    # EDIT THIS LINE
+    dpdt = deltap/deltat
+
+    # EDIT THIS LINE
+    Fnet = dpdt
+
+    # DIT THESE THREE LINES
+    phat = hat((p_init + p_final) / 2) # in same dir as momentum 
+    dmagpdt = (dot(Fnet, phat)) # which is |F|.1.cos (angle between phat and Fnet)
+    dpdt_par = dmagpdt * phat # which is |F|.1.cos (angle between phat and Fnet).phat
+
+    # EDIT THIS LINE
+    Fnet_par = dpdt_par # yeah
+
+    # EDIT THIS LINE
+    dpdt_perp = Fnet - Fnet_par # components
+
+    
+\end{minted}
+\end{multicols}
+\end{frame}
+
+\begin{frame}[fragile]{Simulation code}{Finding mass of black hole}
+\begin{multicols}{2}
+\begin{minted}[breaklines,fontsize=\tiny]{python}
+# EDIT THIS LINE
+    Fnet_perp = dpdt_perp # yes.
+
+    # Calculate the mass of the black hole 
+    # EDIT AND ADD LINES AS NEEDED
+    #
+    # or, F = (G*star.m*mBH)/(r^2)
+    # mBH = (F * r^2)/(G * star.m)
+    
+    mBH = (mag(Fnet) * (X[idx]**2 + Y[idx]**2))/(G * star.m)
+    myballs += mBH
+    print("Mass of Black Hole", mBH)
+    # print("Velocity of ball", v_init)
+
+    # Update current position and velocity and show the object's current track
+    star.pos = vector(X[idx],Y[idx],0)
+    trail.append(pos=star.pos)
+
+    # EDIT THE NEXT SEVEN LINES
+    arrowscale = 1E-17     # determines how long to draw the arrows that represent vectors
+    arrowFnet.pos = star.pos
+    arrowFnet.axis = Fnet*arrowscale
+    arrowFnet_par.pos = star.pos
+    arrowFnet_par.axis = Fnet_par*arrowscale
+    arrowFnet_perp.pos = star.pos
+    arrowFnet_perp.axis = Fnet_perp*arrowscale
+    
+    t = t + deltat
+    idx = idx + 1
+
+print("Average mass of black hole", myballs/(idx-1))
+print("|Fnet|=",mag(Fnet))
+print("|Fnet_par|=",mag(Fnet_par))
+print("|Fnet_perp|=",mag(Fnet_perp))
+print("All done!")
+    
+\end{minted}
+\end{multicols}
+\end{frame}
+
+\begin{frame}[fragile]{Simulation code}{Finding trajectory of the ship}
+\begin{multicols}{2}
+\begin{minted}[breaklines,fontsize=\tiny]{python}
+Glowscript 3.2 VPython
+## PHYS 2211
+## Lab 3: Black Hole - Part 2
+## 2211-lab3workingPART2.py
+## Last updated: 2022-05-14 EAM
+
+
+        
+        
+
+## =====================================
+## VISUALIZATION & GRAPH INITIALIZATION
+## =====================================
+
+# White background so the black hole is visible
+scene.background = color.white
+
+# Visualization (object, trail, origin)
+bh = sphere(pos=vec(0,0,0), color=color.black, radius=2e8)
+planet = sphere(pos=vec(1e10,0,0), color=color.cyan, radius=1e8)
+trailplanet = curve(color=color.cyan)
+ship = sphere(pos=vec(planet.pos.x,planet.radius,0), color=color.magenta, radius=3e7)
+trailship = curve(color=color.magenta)
+
+
+    
+scene.autoscale = False
+
+
+## =======================================
+## SYSTEM PROPERTIES & INITIAL CONDITIONS 
+## =======================================
+
+
+# Mass of the black hole 
+# EDIT THIS LINE with your result from Part 1 of the lab
+bh.m = 1.35641e+34
+
+
+# Other constants - DO NOT CHANGE THESE FIVE LINES
+G = 6.7e-11             # gravitational constant
+planet.m = 9e28         # mass of planet
+ship.m = 7e10           # mass of spaceship
+deltat = 1              # deltat (in seconds)
+t=0                     # initial time
+# DO NOT CHANGE THE ABOVE FIVE LINES
+
+def f_g(m_1, m_2, r, debug=False):
+    rmag = r
+    if isinstance(r, vec):
+        rmag = mag(r)
+    mag_fg = (G * m_1 * m_2) /( rmag**2 )
+    if debug: print(hat(r))
+    if isinstance(r, vec):
+        return mag_fg * hat(r)
+    return mag_fg
+
+\end{minted}
+\end{multicols}
+\end{frame}
+
+\begin{frame}[fragile]{Simulation code}{Finding trajectory of the ship}
+\begin{multicols}{2}
+\begin{minted}[breaklines,fontsize=\tiny]{python}
+# Maximum time to run the simulation
+# Default is ONE HOUR, but you can change it to a longer
+# amount (e.g., 2hrs, 5hrs, etc) if you need more time to
+# visualize a full orbit
+tmax=60*60*3  
+
+
+# Initial conditions for the planet 
+#planet_speed = sqrt(G * bh.m / mag(planet.pos) )
+#planet.vel = vec(0,planet_speed,0)
+#print("Planet's orbital speed:", planet_speed, "m/s")
+#print("Planet's orbital period:", (2*pi*mag(planet.pos)/planet_speed)/(60*60), "hrs")
+#print("---")
+#
+#
+## Initial conditions for the spaceship
+## EDIT THESE LINES as needed to change the initial velocity of the ship
+## Remember that your spaceship cannot move faster than the speed of light
+#ship_speed_x = 0
+#ship_speed_y = 0
+#ship.vel = vec(ship_speed_x, ship_speed_y, 0)
+##ship.vel = sqrt(2 * G * planet.m / planet.radius) * hat(planet.pos)
+##print(ship.vel)
+
+def resetConds():
+    bh.pos = vec(0,0,0)
+    planet.pos = vec(1e10,0,0)
+    trailplanet.clear()
+    ship.pos = vec(planet.pos.x,planet.radius,0)
+    trailship.clear()
+    planet_speed = sqrt(G * bh.m / mag(planet.pos) )
+    planet.vel = vec(0,planet_speed,0)
+    print("Planet's orbital speed:", planet_speed, "m/s")
+    print("Planet's orbital period:", (2*pi*mag(planet.pos)/planet_speed)/(60*60), "hrs")
+    print("---")
+    
+    
+    # Initial conditions for the spaceship
+    # EDIT THESE LINES as needed to change the initial velocity of the ship
+    # Remember that your spaceship cannot move faster than the speed of light
+#    ship_speed_x = 0
+#    ship_speed_y = 0
+#    ship.vel = vec(ship_speed_x, ship_speed_y, 0)
+    #ship.vel = sqrt(2 * G * planet.m / planet.radius) * hat(planet.pos)
+    #print(ship.vel)
+
+\end{minted}
+\end{multicols}
+\end{frame}
+
+\begin{frame}[fragile]{Simulation code}{Finding trajectory of the ship}
+\begin{multicols}{2}
+\begin{minted}[breaklines,fontsize=\tiny]{python}
+# Maximum time to run the simulation
+# Default is ONE HOUR, but you can change it to a longer
+# amount (e.g., 2hrs, 5hrs, etc) if you need more time to
+# visualize a full orbit
+tmax=60*60*3  
+
+
+# Initial conditions for the planet 
+#planet_speed = sqrt(G * bh.m / mag(planet.pos) )
+#planet.vel = vec(0,planet_speed,0)
+#print("Planet's orbital speed:", planet_speed, "m/s")
+#print("Planet's orbital period:", (2*pi*mag(planet.pos)/planet_speed)/(60*60), "hrs")
+#print("---")
+#
+#
+## Initial conditions for the spaceship
+## EDIT THESE LINES as needed to change the initial velocity of the ship
+## Remember that your spaceship cannot move faster than the speed of light
+#ship_speed_x = 0
+#ship_speed_y = 0
+#ship.vel = vec(ship_speed_x, ship_speed_y, 0)
+##ship.vel = sqrt(2 * G * planet.m / planet.radius) * hat(planet.pos)
+##print(ship.vel)
+
+def resetConds():
+    bh.pos = vec(0,0,0)
+    planet.pos = vec(1e10,0,0)
+    trailplanet.clear()
+    ship.pos = vec(planet.pos.x,planet.radius,0)
+    trailship.clear()
+    planet_speed = sqrt(G * bh.m / mag(planet.pos) )
+    planet.vel = vec(0,planet_speed,0)
+    print("Planet's orbital speed:", planet_speed, "m/s")
+    print("Planet's orbital period:", (2*pi*mag(planet.pos)/planet_speed)/(60*60), "hrs")
+    print("---")
+    
+    
+    # Initial conditions for the spaceship
+    # EDIT THESE LINES as needed to change the initial velocity of the ship
+    # Remember that your spaceship cannot move faster than the speed of light
+#    ship_speed_x = 0
+#    ship_speed_y = 0
+#    ship.vel = vec(ship_speed_x, ship_speed_y, 0)
+    #ship.vel = sqrt(2 * G * planet.m / planet.radius) * hat(planet.pos)
+    #print(ship.vel)
+
+\end{minted}
+\end{multicols}
+\end{frame}
+
+\begin{frame}[fragile]{Simulation code}{Finding trajectory of the ship}
+\begin{multicols}{2}
+\begin{minted}[breaklines,fontsize=\tiny]{python}
+## =================
+## CALCULATION LOOP
+## =================
+def calcLoop():
+    t = 0
+    while t < tmax:
+        rate(1000)
+    
+        # Net force on the planet
+        # EDIT THESE LINES (and/or add more if needed) to find:
+        # 1) Fgrav on the planet by the black hole
+        # 2) Fgrav on the planet by the spaceship
+        # 3) the net force on the planet
+        r_bh_to_planet = planet.pos
+        F_bh_ON_planet = f_g(planet.m, bh.m, -r_bh_to_planet)
+        
+        r_ship_to_planet = planet.pos-ship.pos
+        F_ship_ON_planet = f_g(ship.m, planet.m, -r_ship_to_planet)
+        
+        Fnet_ON_planet = F_bh_ON_planet + F_ship_ON_planet
+        
+        
+        # Net force on the spaceship
+        # EDIT THESE LINES (and/or add more if needed) to find:
+        # 1) Fgrav on the spaceship by the black hole
+        # 2) Fgrav on the spaceship by the planet
+        # 3) the net force on the spaceship
+        r_bh_to_ship = ship.pos
+        F_bh_ON_ship = f_g(ship.m, bh.m, -r_bh_to_ship)
+        
+        r_planet_to_ship = ship.pos-planet.pos
+        F_planet_ON_ship = f_g(ship.m, planet.m, -r_planet_to_ship)
+    
+        Fnet_ON_ship = F_bh_ON_ship + F_planet_ON_ship
+        # print(Fnet_ON_ship)
+    
+    
+        # MAKING THINGS MOVE   
+        # Apply Newton's 2nd law and the position update formula 
+        # to make the planet and spaceship move
+        planet.vel = planet.vel + (Fnet_ON_planet/ planet.m) * deltat
+        planet.pos = planet.pos + planet.vel * deltat
+    
+        ship.vel = ship.vel + (Fnet_ON_ship/ ship.m) * deltat
+        # print(Fnet_ON_ship)
+        ship.pos = ship.pos + ship.vel * deltat
+\end{minted}
+\end{multicols}
+\end{frame}
+
+\begin{frame}[fragile]{Simulation code}{Finding trajectory of the ship}
+\begin{multicols}{2}
+\begin{minted}[breaklines,fontsize=\tiny]{python}
+        # Adding break conditions, in case of a crash
+        # Do not edit these lines
+        if mag(r_bh_to_ship) < bh.radius:
+            # print("Oh no, you got sucked into the black hole!")
+            # break
+            return False
+        if mag(r_ship_to_planet) < planet.radius:
+            # print("Oh no, you crashed into the planet!")
+            # break
+            return False
+    
+        trailplanet.append(pos=planet.pos)      # Planet is cyan
+        trailship.append(pos=ship.pos)          # Spaceship is magenta
+        
+        t = t+deltat
+    return True;
+    
+def bruteForceIsHowNasaLaunchesSatellites():
+    # for i in range(-int(3e8), int(3e8), int(1e5)):
+        # for j in range(-int(3e7), int(3e7), int(1e6)):
+            i = -1e8 # -1e1 # -1e8
+            j = 1e7 # 1e7 # 1e7
+            # reset conds
+            resetConds()
+            vel = vec(i, j, 0)
+            ship.vel = vec(i, j, 0)
+            print("Try! v =", vel)
+            if calcLoop():
+                print("This works! v =", vel)
+        
+
+bruteForceIsHowNasaLaunchesSatellites()
+
+#print("---")
+#print("Calculations finished after ",t/60,"minutes")
+#print("The ship is now", mag(ship.pos)-bh.radius, "m away from the event horizon of the black hole")
+#print("All done!")
+\end{minted}
+\end{multicols}
+\end{frame}

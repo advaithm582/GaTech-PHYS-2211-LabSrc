@@ -1,0 +1,79 @@
+% !TEX TS-program = xelatex+makeindex+bibtex+shellescape
+% !TEX encoding = UTF-8 Unicode
+
+% Copyright 2024 Advaith Menon/GaTech
+
+% Permission is hereby granted, free of charge, to any person obtaining
+% a copy of this software and associated documentation files (the 
+% "Software"), to deal in the Software without restriction, including
+% without limitation the rights to use, copy, modify, merge, publish,
+% distribute, sublicense, and/or sell copies of the Software, and to
+% permit persons to whom the Software is furnished to do so, subject
+% to the following conditions:
+
+% The above copyright notice and this permission notice shall be
+% included in all copies or substantial portions of the Software.
+
+% THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+% EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+% OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+% NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+% HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+% WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+% OTHER DEALINGS IN THE SOFTWARE.
+
+% Initial conditions, system and surroundings, FBD
+
+\subsection{Initial Conditions}
+\begin{frame}{Initial Conditions - Part 1}
+	\begin{itemize}
+	\item Position of the black hole, \(\vec{r}_{BH} = \langle 0, 0, 0 \rangle\ \mathrm{m}\)
+	\item Position of the star, \(\vec{r}_{star}\) given to us in a Python List at given time intervals.
+    \item Mass of the star, \(m_{star} = 2\times 10^{30}\ \mathrm{kg}\)
+    \item \(\Delta t = 86400\ \mathrm{s}\)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Initial Conditions - Part 2}
+	\begin{itemize}
+	\item Position of the black hole, \(\vec{r}_{BH} = \langle 0, 0, 0 \rangle\ \mathrm{m}\)
+    \item Mass of the blackhole, \(m_{BH} = 1.35641\times 10^{34}\ \mathrm{kg}\) (from part 1)
+	\item Initial position of the planet, \(\vec{r}_{planet} = \langle 1\times 10^{10}, 0, 0 \rangle\ \mathrm{m}\)
+    \item Radius of the planet, \(a = 1\times 10^{8}\ \mathrm{m}\)
+    \item Initial position of the ship, \(\vec{r}_{ship} = \langle 1\times 10^{10}, 1\times 10^{8}, 0 \rangle\ \mathrm{m}\)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{System and Surroundings - Part 1}
+	\begin{itemize}
+	\item \textbf{System:} The star (hereafter referred to `object')
+	\item \textbf{Surroundings:} Everything else (black hole etc.)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{System and Surroundings - Part 2}
+	\begin{itemize}
+	\item \textbf{System:} The ship (hereafter referred to `object')
+	\item \textbf{Surroundings:} Everything else (black hole, planet etc.)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Diagram}
+    \begin{center}
+	\begin{tikzpicture}[scale=0.5]
+    % axes
+    % \draw[step=1cm,gray,very thin] (-5, -5) grid (5, 5);
+    \draw[->] (0, 0) -- (0, 5) node[anchor=south] {\(\hat{j}\)};
+    \draw[->] (0, 0) -- (5, 0) node[anchor=west] {\(\hat{i}\)};
+    \draw[->] (0, 0) -- (0, -5);
+    \draw[->] (0, 0) -- (-5, 0);
+    % forces
+    \draw[thick,->] (4, 0) -- (2, 0) node[font=\small, anchor=south] {\(\vec{F}_{g, BH}\)};
+    \draw[thick,->] (0, 0) -- (1, 0) node[font=\small, anchor=north] {\(\vec{F}_{BH, g}\)};
+    % ball
+    \fill[black, draw=black] (0, 0) circle (0.5cm);
+    \fill[yellow!70!green, draw=black] (4, 0) circle (0.25cm);
+    \end{tikzpicture}
+    \end{center}
+\end{frame}

@@ -1,0 +1,190 @@
+% !TEX TS-program = xelatex+makeindex+bibtex+shellescape
+% !TEX encoding = UTF-8 Unicode
+
+
+
+% Copyright 2024 Advaith Menon/GaTech
+
+% Permission is hereby granted, free of charge, to any person obtaining
+% a copy of this software and associated documentation files (the 
+% "Software"), to deal in the Software without restriction, including
+% without limitation the rights to use, copy, modify, merge, publish,
+% distribute, sublicense, and/or sell copies of the Software, and to
+% permit persons to whom the Software is furnished to do so, subject
+% to the following conditions:
+
+% The above copyright notice and this permission notice shall be
+% included in all copies or substantial portions of the Software.
+
+% THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+% EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+% OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+% NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+% HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+% WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+% OTHER DEALINGS IN THE SOFTWARE.
+
+
+% This file is a template using the "beamer" package to create slides for a 
+% talk or presentation
+% - Giving a talk on some subject.
+% - The talk is between 15min and 45min long.
+% - Style is ornate.
+
+% MODIFIED by Jonathan Kew, 2008-07-06
+% The header comments and encoding in this file were modified for inclusion
+% with TeXworks.
+% The content is otherwise unchanged from the original distributed with the
+% beamer package.
+
+\documentclass{beamer}
+
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU General Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+
+\mode<presentation>
+{
+  % \usetheme{Warsaw}
+  \usetheme{Singapore}
+  % or ...
+
+  % \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+\usefonttheme[onlymath]{serif}
+\setbeamertemplate{caption}[numbered]
+\setbeamerfont{footnote}{size=\tiny}
+
+
+\usepackage[english]{babel}
+%\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{environ}
+\usepackage{pgffor}
+\usepackage{minted}
+\usepackage{pgfplots}
+\pgfplotsset{height=0.8\textheight,compat=1.9}
+
+% or whatever
+
+\usepackage[utf8]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\newcounter{boxCounter}
+\newsavebox{\boxA}
+\newsavebox{\boxB}
+\newsavebox{\boxC}
+\newsavebox{\boxD}
+
+
+\newlength{\availafter}
+
+\NewEnviron{autotext}[1][0.5cm]
+{\setcounter{boxCounter}{0}\foreach \mysize in {\normalsize,\small,\footnotesize,\scriptsize}{\stepcounter{boxCounter}\expandafter\savebox\csname box\Alph{boxCounter}\endcsname{\vbox{\mysize\BODY}}\setlength{\availafter}{\dimexpr\textheight-\expandafter\ht\csname box\Alph{boxCounter}\endcsname-\pagetotal\relax}\ifdim\availafter>#1\expandafter\usebox\csname box\Alph{boxCounter}\endcsname\breakforeach\fi}}
+
+
+
+\title[PHYS-2211-Lab03] % (optional, use only with long paper titles)
+{Physics 2211 - Lab 3}
+
+\subtitle
+{Black Hole} % (optional)
+
+\author[Menon, Advaith] % (optional, use only with lots of authors)
+{Advaith~Menon\inst{1}}
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute%[Universities of Somewhere and Elsewhere] % (optional, but mostly needed)
+{
+  \inst{1}%
+  Computer Engineering\\
+  Georgia Institute of Technology
+  }
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date%[Short Occasion] % (optional)
+{February 29\textsuperscript{th}, 2024}
+
+\subject{Physics Lab}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+\pgfdeclareimage[height=0.5cm]{university-logo}{img/GeorgiaTechLogo}
+\logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+%\AtBeginSubsection[]
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>{Outline}
+    \tableofcontents[currentsection]  %,currentsubsection
+  \end{frame}
+}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+  \tableofcontents
+  % You might wish to add the option [pausesections]
+\end{frame}
+
+
+% Since this a solution template for a generic talk, very little can
+% be said about how it should be structured. However, the talk length
+% of between 15min and 45min and the theme suggest that you stick to
+% the following rules:  
+
+% - Exactly two or three sections (other than the summary).
+% - At *most* three subsections per section.
+% - Talk about 30s to 2min per frame. So there should be between about
+%   15 and 30 frames, all told.
+
+%%%%% BEGIN SLIDES %%%%%
+
+\input{slides/intro}
+\input{slides/prereqs}
+\input{slides/expt}
+\input{slides/whatif}
+
+\end{document}
+
+
