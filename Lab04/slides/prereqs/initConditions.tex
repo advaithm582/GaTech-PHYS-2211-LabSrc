@@ -1,0 +1,77 @@
+% !TEX TS-program = xelatex+makeindex+bibtex+shellescape
+% !TEX encoding = UTF-8 Unicode
+
+% Copyright 2024 Advaith Menon/GaTech
+
+% Permission is hereby granted, free of charge, to any person obtaining
+% a copy of this software and associated documentation files (the 
+% "Software"), to deal in the Software without restriction, including
+% without limitation the rights to use, copy, modify, merge, publish,
+% distribute, sublicense, and/or sell copies of the Software, and to
+% permit persons to whom the Software is furnished to do so, subject
+% to the following conditions:
+
+% The above copyright notice and this permission notice shall be
+% included in all copies or substantial portions of the Software.
+
+% THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+% EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+% OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+% NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+% HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+% WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+% OTHER DEALINGS IN THE SOFTWARE.
+
+% Initial conditions, system and surroundings, FBD
+
+\subsection{Initial Conditions}
+\begin{frame}{Initial Conditions}
+	\begin{itemize}
+	\item Mass of ball, \(m = 4.02\times 10^{-1}\ \mathrm{m}\)
+	\item Initial position of ball, \(\vec{r}_{ball} = \left\langle-1.20\times 10^{-1},-6.33\times 10^{-1},0\right\rangle\ \mathrm{m}\)
+	\item Initial velocity of ball, \(\vec{v}_{ball} = \left\langle0,0,0\right\rangle\ \mathrm{ms^{-1}}\)
+	\item Stiffness of spring, \(k = 6.83\times 10^{0} \ \mathrm{Nm}\)
+	\item Relaxed length of spring, \(L_0 = 1.23\times 10^{-1} \ \mathrm{m} \)
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{System and Surroundings}
+	\begin{itemize}
+	\item \textbf{System:} Ball + Spring + Earth
+	\item \textbf{Surroundings:} Everything else
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Diagram}
+    \begin{center}
+		\begin{tikzpicture}
+		\node[circle,fill=red,inner sep=2.5mm] (ball) at (-1,-6) {};
+		\draw[decoration={aspect=0.3, segment length=3mm, amplitude=3mm,coil},decorate] (0,0) -- (ball); 
+		\node[font=\small, anchor=west] at (-0.5,-6) {\(m = 40.2\ \mathrm{g}\)};
+		% \draw[thick, <->] (0,0) -- (ball);
+		% \node[font=\small, anchor=west] at (-0.5,-3) {\(L_0 = .123\ \mathrm{m}\)};
+		% base
+		\fill [pattern = north east lines] (-3,0) rectangle (3,0.2);
+		\draw[thick] (-3,0) -- (3,0);
+		\end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Free-Body Diagram of Spring}{Just after it's released}
+    \begin{center}
+	\begin{tikzpicture}[scale=0.5]
+    % axes
+    % \draw[step=1cm,gray,very thin] (-5, -5) grid (5, 5);
+    \draw[->] (0, 0) -- (0, 5) node[anchor=south] {\(\hat{j}\)};
+    \draw[->] (0, 0) -- (5, 0) node[anchor=west] {\(\hat{i}\)};
+    \draw[->] (0, 0) -- (0, -5);
+    \draw[->] (0, 0) -- (-5, 0);
+    % forces
+    \draw[thick,->] (0, 0) -- (0.25, 1.5) node[font=\small, anchor=west] {\(\vec{F}_{spring}\)};
+    \draw[thick,->] (0, .05) -- (3, .05) node[font=\small, anchor=north] {\(\vec{F}_{g}\)};
+    % ball
+    \fill[yellow!70!green, draw=black] (0, 0) circle (0.25cm);
+    \end{tikzpicture}
+    \end{center}
+\end{frame}

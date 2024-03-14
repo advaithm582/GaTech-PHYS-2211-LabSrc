@@ -1,0 +1,89 @@
+% !TEX TS-program = xelatex+makeindex+bibtex+shellescape
+% !TEX encoding = UTF-8 Unicode
+
+% Copyright 2024 Advaith Menon/GaTech
+
+% Permission is hereby granted, free of charge, to any person obtaining
+% a copy of this software and associated documentation files (the 
+% "Software"), to deal in the Software without restriction, including
+% without limitation the rights to use, copy, modify, merge, publish,
+% distribute, sublicense, and/or sell copies of the Software, and to
+% permit persons to whom the Software is furnished to do so, subject
+% to the following conditions:
+
+% The above copyright notice and this permission notice shall be
+% included in all copies or substantial portions of the Software.
+
+% THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+% EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+% OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+% NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+% HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+% WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+% FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+% OTHER DEALINGS IN THE SOFTWARE.
+
+% Observations - Tracker
+\subsection{Code}
+
+\begin{frame}[fragile]{Simulation code}{Conditions alone}
+\begin{minted}[breaklines,fontsize=\tiny]{python}
+# System mass
+ball.m = .402
+
+deltat = 1/210  #choose this
+
+ball.pos = vector(X[0],Y[0],0)
+ball.vel = vector(0, 0, 0)
+
+# Spring constant
+k_s = 6.83
+
+# Relaxed length of spring
+L0 = .123
+L = ball.pos - spring.pos
+Lhat = L/mag(L)
+s = mag(L) - L0  
+
+# compute the system energies 
+K = 0.5 * ball.m * mag(ball.vel) ** 2   # kinetic energy 
+Ug = ball.m * g * ball.pos.y # gravitational potential energy 
+Us = 0.5 * k_s * s**2  # spring potential energy 
+E = K + Us + Ug   # total energy
+
+# Calculate gravitational force
+Fgrav = vector(0,-ball.m * g, 0)
+
+# Calculate spring force on mass by spring
+Fspring = -k_s * s *Lhat
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Simulation code}{Continued}
+\begin{minted}[breaklines,fontsize=\tiny]{python}
+# Calculate the net force
+Fnet = Fspring + Fgrav
+
+# Apply the Momentum Principle
+ball.vel = ball.vel + Fnet / ball.m * deltat
+ball.pos = ball.pos + ball.vel * deltat
+
+# Update the spring
+L = ball.pos - spring.pos
+Lhat = hat(L) 
+s = mag(L) - L0
+
+spring.axis = L
+trail.append(pos=ball.pos)
+
+# Calculate energy changes
+K = 0.5 * ball.m * mag(ball.vel) **2
+deltaK = K - K_i;print(deltaK)
+Ug = ball.m * g * ball.pos.y
+deltaUg = Ug - Ug_i
+Us = 0.5 * k_s * s**2
+deltaUs = Us - Us_i
+E = K + Ug + Us
+deltaE = E - E_i
+\end{minted}
+\end{frame}
